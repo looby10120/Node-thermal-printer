@@ -1,0 +1,39 @@
+ISO-8859-11var printer = require("node-thermal-printer");
+
+printer.init({
+  type: 'epson',
+  interface: '/dev/usb/lp0',
+  characterSet: 'Thai'
+});
+
+var Buffer = require('buffer').Buffer;
+var Iconv  = require('iconv').Iconv;
+//var assert = require('assert');
+
+var iconv = new Iconv('UTF-8', 'TIS-620');
+var buffer = iconv.convert('สวัสดี');
+var buffer2 = iconv.convert(new Buffer('สวัสดี'));
+
+if(buffer.inspect() == buffer2.inspect()){
+    console.log("True",buffer.inspect(),buffer2.inspect());
+}else{
+    console.log("False");
+}
+
+printer.alignCenter();
+printer.println(buffer);
+/*for(var i=33; i<255; i++){
+  printer.print(i + ": ");
+  printer.add(new Buffer([i]));
+  printer.print(", ");
+}*/
+
+printer.cut();
+
+printer.execute(function(err){
+    if (err) {
+      console.error("Print failed", err);
+    } else {
+     console.log("Print done");
+    }
+});
